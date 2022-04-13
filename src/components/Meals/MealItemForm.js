@@ -3,9 +3,8 @@ import Input from "../UI/Input";
 
 import classes from "./MealItemForm.module.css";
 
-const MealItemForm = () => {
+const MealItemForm = ({ onAddToCart }) => {
     const [enteredAmount, setEnteredAmount] = useState(1);
-
     const changeAmountHandler = (event) => {
         if (event.target.value < 1 || event.target.value > 10) return;
         setEnteredAmount(event.target.value);
@@ -13,6 +12,7 @@ const MealItemForm = () => {
 
     const submitHandler = (event) => {
         event.preventDefault();
+        onAddToCart(enteredAmount);
     };
 
     return (

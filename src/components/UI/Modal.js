@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
+import Cart from "../Cart/Cart";
 import Card from "./Card";
 
 import classes from "./Modal.module.css";
@@ -11,11 +12,7 @@ const Backdrop = ({ onConfirm }) => {
 const Overlay = ({ onConfirm }) => {
     return (
         <Card className={classes.modal}>
-            {/* CartItem */}
-            <ul>
-                <li>아이템 품목 </li>
-            </ul>
-            <button onClick={onConfirm}>close</button>
+            <Cart onConfirm={onConfirm} />
         </Card>
     );
 };

@@ -33,7 +33,7 @@ const DUMMY_MEALS = [
 
 const content = DUMMY_MEALS.map(({ id, name, description, price }) => (
     <li key={id}>
-        <MealItem name={name} description={description} price={price} />
+        <MealItem name={name} description={description} price={price} id={id} />
     </li>
 ));
 
