@@ -1,32 +1,32 @@
 import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
-import Cart from "../Cart/Cart";
-import Card from "./Card";
 
 import classes from "./Modal.module.css";
 
-const Backdrop = ({ onConfirm }) => {
-    return <div className={classes.backdrop} onClick={onConfirm} />;
+const Backdrop = ({ onClose }) => {
+    return <div className={classes.backdrop} onClick={onClose} />;
 };
 
-const Overlay = ({ onConfirm }) => {
+const Overlay = (props) => {
     return (
-        <Card className={classes.modal}>
-            <Cart onConfirm={onConfirm} />
-        </Card>
+        <div className={classes.modal}>
+            <div className={classes.content}>{props.children}</div>
+        </div>
     );
 };
 
-const Modal = ({ onConfirm }) => {
+const portalElement = document.getElementById("overlays");
+
+const Modal = (props) => {
     return (
         <Fragment>
             {ReactDOM.createPortal(
-                <Backdrop onConfirm={onConfirm} />,
-                document.getElementById("backdrop-root")
+                <Backdrop onClose={props.onClose} />,
+                portalElement
             )}
             {ReactDOM.createPortal(
-                <Overlay onConfirm={onConfirm} />,
-                document.getElementById("overlay-root")
+                <Overlay>{props.children}</Overlay>,
+                portalElement
             )}
         </Fragment>
     );

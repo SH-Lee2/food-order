@@ -13,20 +13,22 @@ const MealItem = ({ name, description, price, id }) => {
             description,
             price,
             id,
-            amount: +amount,
+            amount,
         };
         ctx.addItem(item);
     };
 
     return (
-        <div className={classes.meal}>
+        <li className={classes.meal}>
             <div>
                 <h3>{name}</h3>
                 <div className={classes.description}>{description}</div>
                 <div className={classes.price}>{price}</div>
             </div>
-            <MealItemForm onAddToCart={addToCartHandler} />
-        </div>
+            <div>
+                <MealItemForm onAddToCart={addToCartHandler} id={id} />
+            </div>
+        </li>
     );
 };
 

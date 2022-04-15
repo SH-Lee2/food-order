@@ -8,16 +8,16 @@ const defaultCartState = {
 
 const cartReducer = (state, action) => {
     if (action.type === "ADD") {
-        const existingItem = state.items.findIndex(
+        const existingItemIndex = state.items.findIndex(
             (item) => item.id === action.item.id
         );
-        const itemAmount = action.item.price * action.item.amount;
-        const totalAmount = state.totalAmount + itemAmount;
-        if (existingItem === -1) {
+        const totalAmount =
+            state.totalAmount + action.item.price * action.item.amount;
+        if (existingItemIndex === -1) {
             return { items: [...state.items, action.item], totalAmount };
         } else {
             // 아이템이 있다면 찾은 아이템의 수량만 변경 해준다.
-            state.items[existingItem].amount += action.item.amount;
+            state.items[existingItemIndex].amount += action.item.amount;
             return { items: [...state.items], totalAmount };
         }
     }
@@ -26,8 +26,8 @@ const cartReducer = (state, action) => {
         const existingItemIndex = state.items.findIndex(
             (item) => item.id === action.id
         );
-        const itemAmount = state.items[existingItemIndex].price;
-        const totalAmount = state.totalAmount - itemAmount;
+        const totalAmount =
+            state.totalAmount - state.items[existingItemIndex].price;
         if (state.items[existingItemIndex].amount - 1 !== 0) {
             state.items[existingItemIndex].amount -= 1;
             return { items: [...state.items], totalAmount };
@@ -43,7 +43,7 @@ const cartReducer = (state, action) => {
         }
     }
     // 매우중요!!!!!!!!!!!!!!!
-    return { items: [], totalAmount: 0 };
+    return defaultCartState;
 };
 
 const CartProvider = (props) => {

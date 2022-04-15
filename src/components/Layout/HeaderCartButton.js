@@ -1,27 +1,33 @@
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import CartContext from "../../store/cart-context";
 import CartIcon from "../Cart/CartIcon";
-import Modal from "../UI/Modal";
 import classes from "./HeaderCartButton.module.css";
 
-const HeaderCartButton = () => {
-    const [modal, setModal] = useState(false);
+const HeaderCartButton = ({ onClick }) => {
     const ctx = useContext(CartContext);
-    const openModalHandler = () => {
-        console.log(ctx);
-        setModal(true);
-    };
-    const closeModalHandler = () => {
-        setModal(false);
-    };
-    const bedge = ctx.items.reduce((pre, cur) => pre + cur.amount, 0);
+    const [btnIsHighlighted, setBtnIsHighlighted] = useState(false);
+
+    const { items } = ctx;
+
+    const bedge = items.reduce((pre, cur) => pre + cur.amount, 0);
+
+    const btnclasses = `${classes.button} ${
+        btnIsHighlighted ? classes.bump : ""
+    }`;
+
+    useEffect(() => {
+        if (items.length === 0) return;
+        setBtnIsHighlighted(true);
+
+        const timer = setTimeout(() => {
+            setBtnIsHighlighted(false);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [items]);
+
     return (
         <Fragment>
-            {modal && <Modal onConfirm={closeModalHandler} />}
-            <button
-                className={`${classes.button} ${classes.bump}`}
-                onClick={openModalHandler}
-            >
+            <button className={btnclasses} onClick={onClick}>
                 <span className={classes.icon}>
                     <CartIcon />
                 </span>

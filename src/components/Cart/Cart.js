@@ -1,14 +1,15 @@
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 import CartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
 
 import classes from "./Cart.module.css";
+import Modal from "../UI/Modal";
 
-const Cart = ({ onConfirm }) => {
+const Cart = ({ onClose }) => {
     const ctx = useContext(CartContext);
 
     const addItemHandler = (item) => {
-        ctx.addItem(item);
+        ctx.addItem({ ...item, amount: 1 });
     };
     const removeItemHandler = (id) => {
         ctx.removeItem(id);
@@ -22,29 +23,37 @@ const Cart = ({ onConfirm }) => {
         }
     };
     const totalAmount = ctx.totalAmount.toFixed(2);
+    const hasItems = ctx.items.length > 0;
     return (
-        <Fragment>
+        <Modal onClose={onClose}>
             <ul className={classes["cart-items"]}>
-                <CartItem
-                    items={ctx.items}
-                    onAddItem={addItemHandler}
-                    onRemoveItem={removeItemHandler}
-                />
+                {ctx.items.map((item) => (
+                    <CartItem
+                        key={item.id}
+                        name={item.name}
+                        price={item.price}
+                        amount={item.amount}
+                        id={item.id}
+                        onAddItem={addItemHandler.bind(null, item)}
+                        onRemoveItem={removeItemHandler.bind(null, item.id)}
+                    />
+                ))}
             </ul>
             <div className={classes.total}>
                 <span>Total Amount</span>
                 <span>${totalAmount}</span>
             </div>
             <div className={classes.actions}>
-                <button onClick={onConfirm}>Close</button>
-                <button
-                    className={`${classes["button--alt"]} ${classes.button}`}
-                    onClick={orderHandler}
-                >
-                    Order
+                <button className={classes["button--alt"]} onClick={onClose}>
+                    Close
                 </button>
+                {hasItems && (
+                    <button className={classes.button} onClick={orderHandler}>
+                        Order
+                    </button>
+                )}
             </div>
-        </Fragment>
+        </Modal>
     );
 };
 
