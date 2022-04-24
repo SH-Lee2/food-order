@@ -1,13 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import CartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
 
 import classes from "./Cart.module.css";
 import Modal from "../UI/Modal";
 import Checkout from "./Checkout";
+import useHttp from "../../hooks/use-http";
 
 const Cart = ({ onClose }) => {
     const [isCheckout, setIsCheckout] = useState(false);
+    const [didSubmit, setDidSubmit] = useState(false);
+    const [isBack, setIsBack] = useState(false);
+    const { isLoading, error, sendRequest: fetchOrder } = useHttp();
     const ctx = useContext(CartContext);
 
     const addItemHandler = (item) => {
@@ -23,6 +27,20 @@ const Cart = ({ onClose }) => {
     };
     const totalAmount = ctx.totalAmount.toFixed(2);
     const hasItems = ctx.items.length > 0;
+
+    const submitOrderHandler = (userData) => {
+        fetchOrder({
+            url: `https://react-http-3d1cf-default-rtdb.firebaseio.com/orders.jon`,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: { user: userData, orderedItems: ctx.items },
+        });
+        setIsBack(false);
+        setDidSubmit(true);
+    };
+
     const modalActions = (
         <div className={classes.actions}>
             <button className={classes["button--alt"]} onClick={onClose}>
@@ -35,8 +53,8 @@ const Cart = ({ onClose }) => {
             )}
         </div>
     );
-    return (
-        <Modal onClose={onClose}>
+    const cartModalContent = (
+        <Fragment>
             <ul className={classes["cart-items"]}>
                 {ctx.items.map((item) => (
                     <CartItem
@@ -54,8 +72,49 @@ const Cart = ({ onClose }) => {
                 <span>Total Amount</span>
                 <span>${totalAmount}</span>
             </div>
-            {isCheckout && <Checkout onClose={onClose} />}
+            {isCheckout && (
+                <Checkout onClose={onClose} onSubmit={submitOrderHandler} />
+            )}
             {!isCheckout && modalActions}
+        </Fragment>
+    );
+
+    const isSubmittingModalContent = (
+        <Fragment>
+            <p>Sending order data...</p>
+        </Fragment>
+    );
+    const didSubmitModalContent = (
+        <Fragment>
+            <p>Successfully sent the order!</p>
+            <div className={classes.actions}>
+                <button className={classes.button} onClick={onClose}>
+                    Close
+                </button>
+            </div>
+        </Fragment>
+    );
+    const backBtnHandler = () => {
+        setIsBack(true);
+        setDidSubmit(false);
+    };
+    const errorModalContent = (
+        <Fragment>
+            <p>{error}</p>
+            <div className={classes.actions}>
+                <button className={classes.button} onClick={backBtnHandler}>
+                    back
+                </button>
+            </div>
+        </Fragment>
+    );
+    return (
+        <Modal onClose={onClose}>
+            {(!isLoading && !didSubmit && cartModalContent) ||
+                (!isLoading && !didSubmit && isBack && cartModalContent)}
+            {isLoading && isSubmittingModalContent}
+            {error && !isBack && errorModalContent}
+            {!isLoading && !error && didSubmit && didSubmitModalContent}
         </Modal>
     );
 };

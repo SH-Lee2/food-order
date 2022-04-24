@@ -7,7 +7,7 @@ const validateValue = (value) => {
     return value.trim() !== "";
 };
 
-const Checkout = ({ onClose }) => {
+const Checkout = ({ onClose, onSubmit }) => {
     const {
         value: inputName,
         isValid: inputNameIsValid,
@@ -68,6 +68,12 @@ const Checkout = ({ onClose }) => {
     const confirmHandler = (event) => {
         event.preventDefault();
         if (!formValid) return;
+        onSubmit({
+            name: inputName,
+            street: inputStreet,
+            postal: inputPostal,
+            city: inputCity,
+        });
         inputNameReset();
         inputStreetReset();
         inputPostalReset();
