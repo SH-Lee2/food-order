@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import CartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
 
@@ -30,7 +30,7 @@ const Cart = ({ onClose }) => {
 
     const submitOrderHandler = (userData) => {
         fetchOrder({
-            url: `https://react-http-3d1cf-default-rtdb.firebaseio.com/orders.jon`,
+            url: `https://react-http-3d1cf-default-rtdb.firebaseio.com/orders.json`,
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -108,12 +108,19 @@ const Cart = ({ onClose }) => {
             </div>
         </Fragment>
     );
+    // https://stackoverflow.com/questions/62336340/cannot-update-a-component-while-rendering-a-different-component-warning
+    useEffect(() => {
+        if (didSubmit && !isLoading && !error) {
+            ctx.clearCart();
+        }
+    }, [didSubmit, isLoading, error, ctx]);
+
     return (
         <Modal onClose={onClose}>
             {(!isLoading && !didSubmit && cartModalContent) ||
                 (!isLoading && !didSubmit && isBack && cartModalContent)}
             {isLoading && isSubmittingModalContent}
-            {error && !isBack && errorModalContent}
+            {!isLoading && error && !isBack && errorModalContent}
             {!isLoading && !error && didSubmit && didSubmitModalContent}
         </Modal>
     );

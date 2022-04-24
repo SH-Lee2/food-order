@@ -5,6 +5,7 @@ const useHttp = () => {
     const [error, setError] = useState(null);
     const sendRequest = useCallback(async (requestConfig, ApplyData = null) => {
         setIsLoading(true);
+        setError(null);
         try {
             const res = await fetch(requestConfig.url, {
                 method: requestConfig.method ? requestConfig.method : "GET",
